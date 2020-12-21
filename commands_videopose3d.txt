@@ -1,0 +1,18 @@
+# detect 2D keypoints with detectron2
+
+!mkdir output
+!python VideoPose3D/inference/infer_video_d2.py \
+    --cfg COCO-Keypoints/keypoint_rcnn_R_101_FPN_3x.yaml \
+    --output-dir output \
+    --image-ext mp4 \
+    ./
+
+
+# convert detection results to custom dataset
+
+!cd VideoPose3D/data/ && python prepare_data_2d_custom.py -i ../../output -o federer
+
+
+# find 3D keypoints and visualize results
+
+!cd VideoPose3D/ && python run.py -d custom -k federer -arc 3,3,3,3,3 -c checkpoint --evaluate pretrained_h36m_detectron_coco.bin --render --viz-subject video.mp4 --viz-action custom --viz-camera 0 --viz-video ../video.mp4 --viz-output output.mp4 --viz-size 6
