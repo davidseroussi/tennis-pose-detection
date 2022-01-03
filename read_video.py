@@ -2,8 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import time
+import os.path
 
-cap = cv2.VideoCapture('federer.mp4')
+cap = cv2.VideoCapture('videos_tennis/cut_7.mov')
+keypoints = np.load('datasets/data_cut_7.npz', allow_pickle=True)
+keypoints = keypoints['positions_2d'].item()['cut_7.mov']['custom'][0]
 
 c = 0
 
@@ -31,6 +34,10 @@ while(cap.isOpened()):
         center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         cv2.circle(frame, (int(x), int(y)), int(radius),(0, 0, 255), 2)
         #cv2.circle(frame, center, 5, (0, 0, 255), -1)
+
+        keypoints_wrist = keypoints[c][10]/4
+        dist = np.linalg.norm(keypoints_wrist - np.array([x, y]))
+        cv2.putText(frame, str(int(dist)), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
 
     cv2.imshow('view', frame)
     cv2.imshow('mask', mask)
